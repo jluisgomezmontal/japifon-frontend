@@ -39,7 +39,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await axios.get("http://localhost:3000/events");
+        const res = await axios.get("https://japifon-backend.onrender.com/events");
         setEvents(res.data);
       } catch (error) {
         setError("Error al cargar eventos");

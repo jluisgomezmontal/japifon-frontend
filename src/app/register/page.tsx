@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      await axios.post('http://localhost:3000/auth/register', { email, password });
+      await axios.post('https://japifon-backend.onrender.com/auth/register', { email, password });
       router.push('/login');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al registrar usuario');

@@ -47,7 +47,7 @@ export default function CreateEventPage() {
 
     try {
       await axios.post(
-        'http://localhost:3000/events',
+        'https://japifon-backend.onrender.com/events',
         {
           title: form.title,
           description: form.description,

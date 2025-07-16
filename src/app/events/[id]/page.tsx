@@ -53,7 +53,7 @@ export default function EventDetails() {
   useEffect(() => {
     async function fetchEvent() {
       try {
-        const res = await axios.get(`http://localhost:3000/events/${id}`);
+        const res = await axios.get(`https://japifon-backend.onrender.com/${id}`);
         setEvent(res.data);
         checkReservation(res.data);
       } catch (error) {
@@ -92,7 +92,7 @@ export default function EventDetails() {
       const token = localStorage.getItem('token');
       console.log('Enviando reserva con token:', token);
       await axios.post(
-        `http://localhost:3000/reservations/${id}`,
+        `https://japifon-backend.onrender.com/reservations/${id}`,
         { eventId: id },
         {
           headers: {
@@ -115,7 +115,7 @@ export default function EventDetails() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/reservations/${id}`, {
+      await axios.delete(`https://japifon-backend.onrender.com/reservations/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -1,103 +1,152 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { jwtDecode } from "jwt-decode";
+
+type Event = {
+  _id: string;
+  title: string;
+  date: string;
+  location: string;
+  availableTickets: number;
+};
+
+type JwtPayload = {
+  sub: string;
+  email: string;
+};
+
+export default function HomePage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        setEmail(decoded.email);
+      } catch (e) {
+        console.error("Token inválido", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const res = await axios.get("http://localhost:3000/events");
+        setEvents(res.data);
+      } catch (error) {
+        setError("Error al cargar eventos");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setEmail(null);
+  };
+
+  if (loading)
+    return (
+      <p className="text-center mt-16 text-gray-600 font-semibold text-lg animate-pulse">
+        Cargando eventos...
+      </p>
+    );
+
+  if (error)
+    return (
+      <p className="text-center mt-16 text-red-600 font-semibold text-lg">
+        {error}
+      </p>
+    );
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="max-w-7xl mx-auto px-6 py-10">
+      {!email ? (
+        <nav className="p-6 flex gap-4 justify-center">
+          <Link href="/register" className="text-blue-600 hover:underline">
+            Registrarse
+          </Link>
+          <Link href="/login" className="text-blue-600 hover:underline">
+            Iniciar sesión
+          </Link>
+        </nav>
+      ) : (
+        <div className="mb-6 flex justify-between items-center">
+          <h3 className="text-gray-700 font-semibold">Usuario: {email}</h3>
+          <div className="flex gap-4">
+            <Link
+              href="/events/new"
+              className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition"
+            >
+              + Crear nuevo evento
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+
+      <h1 className="text-5xl font-extrabold mb-12 text-center text-gray-400 tracking-tight drop-shadow-md">
+        Eventos disponibles
+      </h1>
+
+      {events.length === 0 && (
+        <p className="text-center text-gray-500 text-lg italic">
+          No hay eventos disponibles.
+        </p>
+      )}
+
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {events.map((event) => (
+          <li
+            key={event._id}
+            className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-between"
+          >
+            <div>
+              <h2 className="text-2xl font-semibold mb-3 text-gray-800">
+                {event.title}
+              </h2>
+              <p className="text-gray-600 mb-1">
+                <span className="font-medium">Fecha:</span>{" "}
+                {new Date(event.date).toLocaleString("es-MX", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </p>
+              <p className="text-gray-600 mb-1">
+                <span className="font-medium">Ubicación:</span>{" "}
+                {event.location}
+              </p>
+              <p className="text-gray-600 mt-3 mb-6">
+                <span className="font-semibold text-blue-600">
+                  Boletos disponibles: {event.availableTickets}
+                </span>
+              </p>
+            </div>
+
+            <Link
+              href={`/events/${event._id}`}
+              className="self-start inline-block px-5 py-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition-colors"
+            >
+              Ver detalles
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }

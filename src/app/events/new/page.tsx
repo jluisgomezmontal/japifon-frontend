@@ -71,7 +71,7 @@ export default function CreateEventPage() {
 
   return (
     <main className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
+      <h1 className="text-4xl font-bold text-center text-white mb-8">
         Crear nuevo evento
       </h1>
 
@@ -81,7 +81,7 @@ export default function CreateEventPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white shadow-md rounded-lg p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white text-black shadow-md rounded-lg p-6">
         <div>
           <label className="block font-semibold mb-1">Título</label>
           <input

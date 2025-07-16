@@ -21,7 +21,6 @@ export default function LoginPage() {
 
     try {
       const res = await axios.post('https://japifon-backend.onrender.com/auth/login', { email, password });
-      // Guardar token JWT en localStorage
       localStorage.setItem('token', res.data.access_token);
       localStorage.setItem('email', email);
       router.push('/');

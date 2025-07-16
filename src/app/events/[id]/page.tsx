@@ -53,7 +53,7 @@ export default function EventDetails() {
   useEffect(() => {
     async function fetchEvent() {
       try {
-        const res = await axios.get(`https://japifon-backend.onrender.com/${id}`);
+        const res = await axios.get(`https://japifon-backend.onrender.com/events/${id}`);
         setEvent(res.data);
         checkReservation(res.data);
       } catch (error) {
@@ -76,7 +76,7 @@ export default function EventDetails() {
         // });
         const localEmail = localStorage.getItem("email");
         const existe = res.reservedBy.some((email: any) => email.email === localEmail);
-
+console.log(res)
         console.log(existe ? "Sí existe" : "No existe");
         // const reservedEventIds = res.reservedBy.map((r: any) => r.event._id);
         setHasReservation(existe);
